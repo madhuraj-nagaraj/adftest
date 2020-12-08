@@ -1,0 +1,318 @@
+{
+	"name": "GetTableListAndTriggerCopyData",
+	"properties": {
+		"activities": [
+			{
+				"name": "LookupTableList",
+				"description": "Retrieve the table list from On-Prem SQL database for Description",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "WaitAfterCopy-etl_env_table",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": {
+							"value": "SELECT * FROM etl.lookuptablelist",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00"
+					},
+					"dataset": {
+						"referenceName": "SqlDatabaseDataSet",
+						"type": "DatasetReference",
+						"parameters": {
+							"DSSQLServer": {
+								"value": "@pipeline().parameters.PLSQLServer",
+								"type": "Expression"
+							}
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "TriggerCopy",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "LookupTableList",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "IterateAndCopySQLTables",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"tableList": {
+							"value": "@activity('LookupTableList').output.value",
+							"type": "Expression"
+						},
+						"CPLSQLServer": {
+							"value": "@pipeline().parameters.PLSQLServer",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "WaitAfterCopy-etl_env_table",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "CopyDataEtlparametertable",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 15
+				}
+			},
+			{
+				"name": "CopyDataEtlenvtable",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "CopyDataEtlruntable",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlDWSource",
+						"queryTimeout": "02:00:00"
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"preCopyScript": "TRUNCATE TABLE [etl].[etl_env_table]"
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "AzureSqlDWEtlenvtableDataSet",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SqlDatabaseEtlenvtableDataSet",
+						"type": "DatasetReference",
+						"parameters": {
+							"DSSQLServer": {
+								"value": "@pipeline().parameters.PLSQLServer",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "CopyDataEtlruntable",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlDWSource",
+						"queryTimeout": "02:00:00"
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"preCopyScript": "TRUNCATE TABLE [etl].[etl_run_table]"
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "AzureSqlDWEtlruntableDataSet",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SqlDatabaseEtlruntableDataSet",
+						"type": "DatasetReference",
+						"parameters": {
+							"DSSQLServer": {
+								"value": "@pipeline().parameters.PLSQLServer",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "CopyDataEtllongtable",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "WaitAfterTriggerCopy",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"queryTimeout": "02:00:00"
+					},
+					"sink": {
+						"type": "SqlDWSink",
+						"allowPolyBase": true,
+						"polyBaseSettings": {
+							"rejectValue": 0,
+							"rejectType": "value",
+							"useTypeDefault": true
+						}
+					},
+					"enableStaging": true,
+					"stagingSettings": {
+						"linkedServiceName": {
+							"referenceName": "adlsblobtrnwest2",
+							"type": "LinkedServiceReference"
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "SqlDatabaseLogcounttableDataSet",
+						"type": "DatasetReference",
+						"parameters": {
+							"DSSQLServer": {
+								"value": "@pipeline().parameters.PLSQLServer",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "AzureSqlDWLogcounttableDataset",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "CopyDataEtlparametertable",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "CopyDataEtlenvtable",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlDWSource",
+						"queryTimeout": "02:00:00"
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"preCopyScript": "TRUNCATE TABLE [etl].[etl_parameter_table]"
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "AzureSqlDWEtlparametertableDataset",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SqlDatabaseEtlparametertableDataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"DSSQLServer": {
+								"value": "@pipeline().parameters.PLSQLServer",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "WaitAfterTriggerCopy",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "TriggerCopy",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 15
+				}
+			}
+		],
+		"parameters": {
+			"PLSQLServer": {
+				"type": "string"
+			}
+		},
+		"annotations": []
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,63 @@
+{
+	"name": "AzureSqlDWEtlenvtableDataSet",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "synapsescpwest2",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "etl_env_table_id",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "shir_group",
+				"type": "varchar"
+			},
+			{
+				"name": "sequence",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "sql_server_name",
+				"type": "varchar"
+			},
+			{
+				"name": "cn_sql_server_name",
+				"type": "varchar"
+			},
+			{
+				"name": "business_unit_id",
+				"type": "varchar"
+			},
+			{
+				"name": "aud_create_datetime",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "aud_create_user",
+				"type": "varchar"
+			},
+			{
+				"name": "aud_update_datetime",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "aud_update_user",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "etl",
+			"table": "etl_env_table"
+		}
+	}
+}

@@ -1,0 +1,104 @@
+{
+	"name": "GetSQLServerAndTriggerRun",
+	"properties": {
+		"activities": [
+			{
+				"name": "LookupSQLServerList",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "SPTruncateTableLogcounttable",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlDWSource",
+						"sqlReaderQuery": {
+							"value": "SELECT [cn_sql_server_name] FROM [etl].[vew_GetSQLServerList] ORDER BY [sequence]",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00"
+					},
+					"dataset": {
+						"referenceName": "AzureSqlDWDataSetSQLServerList",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "SPTruncateTableLogcounttable",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[stg].[truncate_log_count_table]"
+				},
+				"linkedServiceName": {
+					"referenceName": "synapsescpwest2",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "ForEachSQLServer",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "LookupSQLServerList",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('LookupSQLServerList').output.value",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "TriggerRunForSQLServer",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "GetTableListAndTriggerCopyData",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"PLSQLServer": {
+										"value": "@{item().cn_sql_server_name}",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"annotations": []
+	}
+}

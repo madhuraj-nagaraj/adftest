@@ -1,0 +1,59 @@
+{
+	"name": "AzureSqlDWLogcounttableDataset",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "synapsescpwest2",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "log_count_table_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "business_unit_id",
+				"type": "varchar"
+			},
+			{
+				"name": "sql_server_name",
+				"type": "varchar"
+			},
+			{
+				"name": "module",
+				"type": "varchar"
+			},
+			{
+				"name": "etl_run_type",
+				"type": "varchar"
+			},
+			{
+				"name": "query_name",
+				"type": "varchar"
+			},
+			{
+				"name": "record_count",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "load_local_dttm",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "load_utc_dttm",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "stg",
+			"table": "log_count_table"
+		}
+	}
+}

@@ -1,0 +1,27 @@
+{
+	"name": "SqlDatabaseEtlenvtableDataSet",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SqlServerWIN101099IR",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"ParameterSQLServer": {
+					"value": "@dataset().DSSQLServer",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"DSSQLServer": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "etl",
+			"table": "etl_env_table"
+		}
+	}
+}

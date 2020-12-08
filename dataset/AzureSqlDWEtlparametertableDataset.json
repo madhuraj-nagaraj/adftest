@@ -1,0 +1,58 @@
+{
+	"name": "AzureSqlDWEtlparametertableDataset",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "synapsescpwest2",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "etl_parameter_table_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "business_unit_id",
+				"type": "varchar"
+			},
+			{
+				"name": "module",
+				"type": "varchar"
+			},
+			{
+				"name": "parameter_name",
+				"type": "varchar"
+			},
+			{
+				"name": "parameter_value",
+				"type": "varchar"
+			},
+			{
+				"name": "aud_create_datetime",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "aud_create_user",
+				"type": "varchar"
+			},
+			{
+				"name": "aud_update_datetime",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "aud_update_user",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "etl",
+			"table": "etl_parameter_table"
+		}
+	}
+}

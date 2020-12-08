@@ -1,0 +1,10 @@
+{
+	"name": "lskvscpwest2",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://kv-scp-west2.vault.azure.net/"
+		}
+	}
+}

@@ -1,0 +1,27 @@
+{
+	"name": "SqlDatabaseLogcounttableDataSet",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SqlServerWIN101099IR",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"ParameterSQLServer": {
+					"value": "@dataset().DSSQLServer",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"DSSQLServer": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "etl",
+			"table": "vew_log_count_table"
+		}
+	}
+}

@@ -1,0 +1,29 @@
+{
+	"name": "SqlServerWIN101099IR",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"description": "USCSCHENC5L1C\nWIN101099",
+		"parameters": {
+			"ParameterSQLServer": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "Integrated Security=False;Data Source=@{linkedService().ParameterSQLServer};Initial Catalog=edap_adfdb;User ID=edap_etl_svc",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "lskvscpwest2",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "edapetlsvc"
+			}
+		},
+		"connectVia": {
+			"referenceName": "IR-USCSCHENC5L1C",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

@@ -1,0 +1,28 @@
+{
+	"name": "SqlDatabaseDataSet",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SqlServerWIN101099IR",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"ParameterSQLServer": {
+					"value": "@dataset().DSSQLServer",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"DSSQLServer": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dummySchema",
+			"table": "dummyTable"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

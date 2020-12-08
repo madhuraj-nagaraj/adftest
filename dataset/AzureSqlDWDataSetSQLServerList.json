@@ -1,0 +1,16 @@
+{
+	"name": "AzureSqlDWDataSetSQLServerList",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "synapsescpwest2",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dummySchema",
+			"table": "dummyTable"
+		}
+	}
+}
